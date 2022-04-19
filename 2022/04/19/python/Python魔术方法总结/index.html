@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"coderzhangcw.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Python魔术方法总结_call_类的实例对象被调用时执行 123456class Foo:    def __call__(self, a, b, c):        # ...x &#x3D; Foo()x(1, 2, 3) # __call__  __iter__和_next_ Iterable: 有迭代能力的对象，一个类，实现了__iter__，那么就认为它有迭代能力，通常此函数必须返回一个实现">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python魔术方法总结">
+<meta property="og:url" content="http://coderzhangcw.github.io/2022/04/19/python/Python%E9%AD%94%E6%9C%AF%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="编程客栈">
+<meta property="og:description" content="Python魔术方法总结_call_类的实例对象被调用时执行 123456class Foo:    def __call__(self, a, b, c):        # ...x &#x3D; Foo()x(1, 2, 3) # __call__  __iter__和_next_ Iterable: 有迭代能力的对象，一个类，实现了__iter__，那么就认为它有迭代能力，通常此函数必须返回一个实现">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-04-19T11:25:56.025Z">
+<meta property="article:modified_time" content="2022-04-19T11:29:29.832Z">
+<meta property="article:author" content="ZhangChengWen">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://coderzhangcw.github.io/2022/04/19/python/Python%E9%AD%94%E6%9C%AF%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Python魔术方法总结 | 编程客栈</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">编程客栈</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://coderzhangcw.github.io/2022/04/19/python/Python%E9%AD%94%E6%9C%AF%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="ZhangChengWen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="编程客栈">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Python魔术方法总结
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-04-19 19:25:56 / 修改时间：19:29:29" itemprop="dateCreated datePublished" datetime="2022-04-19T19:25:56+08:00">2022-04-19</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Python魔术方法总结"><a href="#Python魔术方法总结" class="headerlink" title="Python魔术方法总结"></a>Python魔术方法总结</h1><h3 id="call"><a href="#call" class="headerlink" title="_call_"></a>_<em>call_</em></h3><p>类的实例对象被调用时执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">class Foo:</span><br><span class="line">    def __call__(self, a, b, c):</span><br><span class="line">        # ...</span><br><span class="line"></span><br><span class="line">x = Foo()</span><br><span class="line">x(1, 2, 3) # __call__</span><br></pre></td></tr></table></figure>
+
+<h3 id="iter-和-next"><a href="#iter-和-next" class="headerlink" title="__iter__和_next_"></a>__iter__和_<em>next_</em></h3><ul>
+<li><p><code>Iterable</code>: 有迭代能力的对象，一个类，实现了<code>__iter__</code>，那么就认为它有迭代能力，通常此函数必须返回一个实现了<code>__next__</code>的对象，如果自己实现了，你可以返回<code>self</code>，当然这个返回值不是必须的；</p>
+</li>
+<li><p><code>Iterator</code>: 迭代器(当然也是<code>Iterable</code>)，同时实现了<code>__iter__</code>和<code>__next__</code>的对象，缺少任何一个都不算是<code>Iterator</code>，迭代器迭代到最后，抛出StopIteration</p>
+</li>
+<li><p><code>Iterable</code>生成<code>Iterator</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a = iter(my_list)</span><br><span class="line">next(a)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="new-和-init"><a href="#new-和-init" class="headerlink" title="__new_和_init_"></a>__new_和_<em>init_</em></h3><ul>
+<li><p>__new__方法用于创建对象并返回对象，它作用在构造方法建造实例之前。当返回对象时会自动调用__init__方法进行初始化。__new__方法是静态方法，而__init__是实例方法</p>
+</li>
+<li><p><strong>可以这样理解：<code>Python</code> 中存在于类中的构造方法 <code>__new__（）</code>负责将类实例化，而在 <code>__init__（）</code> 执行之前，<code>__new__（）</code>负责制造这样的一个实例对象，以便 <code>__init__（）</code> 去让该实例对象更加的丰富（为其添加属性等）</strong></p>
+</li>
+<li><p>同时：<code>__new__()</code> 方法还决定是否要使用该 <code>__init__()</code> 方法，因为 <code>__new__()</code> 可以调用其他类的构造方法或者直接返回别的对象来作为本类 的实例。</p>
+</li>
+<li><p><code>__new__() </code>方法始终都是类的静态方法，即使没有被加上静态方法装饰器。</p>
+</li>
+<li><p>new实现单例</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">class Singleton(object):</span><br><span class="line">    _instance = None</span><br><span class="line">    def __new__(cls, *args, **kwargs):</span><br><span class="line">        if cls._instance is None:</span><br><span class="line">            cls._instance = object.__new__(cls, *args, **kwargs)</span><br><span class="line"></span><br><span class="line">        return cls._instance</span><br></pre></td></tr></table></figure></li>
+<li><p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6999425391639134238">进阶学Python：Python类的()</a></p>
+<h3 id="getitem-、-setitem-和-delitem"><a href="#getitem-、-setitem-和-delitem" class="headerlink" title="__getitem__、__setitem__和_delitem_"></a>__getitem__、__setitem__和_<em>delitem_</em></h3><p>key-value方式访问实现</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">class Foo:</span><br><span class="line">	</span><br><span class="line">	def __setitem__(self, key, value):</span><br><span class="line">		pass</span><br><span class="line">	</span><br><span class="line">	def __getitem__(self, item):</span><br><span class="line">		pass</span><br><span class="line">	</span><br><span class="line">	def __delitem__(self, key):</span><br><span class="line">		pass</span><br><span class="line"></span><br><span class="line">obj = Foo()</span><br><span class="line">obj[&#x27;k&#x27;] = 123 # 内部调用__setitem__,self=obj, key=k, value=123</span><br><span class="line">obj[&#x27;k&#x27;] # 内部调用__getitem__,self=obj, item=k</span><br><span class="line">del obj[&#x27;k&#x27;] # 内部调用__delitem__,self=obj, key=k</span><br></pre></td></tr></table></figure>
+
+<h3 id="str"><a href="#str" class="headerlink" title="_str_"></a>_<em>str_</em></h3><p>print打印实例对象时调用</p>
+<h3 id="enter-和-exit"><a href="#enter-和-exit" class="headerlink" title="__enter__和_exit_"></a>__enter__和_<em>exit_</em></h3><p>上下文管理</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class Foo:</span><br><span class="line">    def __init__(self, name):</span><br><span class="line">        self.__name = name</span><br><span class="line"></span><br><span class="line">    def __enter__(self):</span><br><span class="line">        return open(&#x27;a.txt&#x27;, mode=&#x27;a&#x27;, encoding=&#x27;utf8&#x27;)</span><br><span class="line">    </span><br><span class="line">    def __exit__(self, exec_type, exec_val, exec_tb):</span><br><span class="line">        self.x.close()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">with Foo(&#x27;haha&#x27;) as f: # f = __enter__的返回</span><br><span class="line">    print(&#x27;haha&#x27;)</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="add"><a href="#add" class="headerlink" title="_add_"></a>_<em>add_</em></h3><p>对象相加操作</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">class Foo:</span><br><span class="line">	def __add__(self, other):</span><br><span class="line">		return 123</span><br><span class="line"></span><br><span class="line">o1 = Foo()</span><br><span class="line">o2 = Foo()</span><br><span class="line">val = o1 + o2 # self=o1, other=o2</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="getattr-和-getattribute"><a href="#getattr-和-getattribute" class="headerlink" title="__getattr_和_getattribute_"></a>__getattr_和_<em>getattribute_</em></h3><p>属性访问,使用.访问属性时,如果找不到对象时执行，item=haha</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">class Foo:</span><br><span class="line">	def __getattr__(self, item):</span><br><span class="line">		return 123</span><br><span class="line">obj = Foo()</span><br><span class="line">obj.haha # 使用.访问属性时,如果找不到对象时执行，item=haha</span><br></pre></td></tr></table></figure>
+
+<p>当访问 某个对象的属性时，会无条件的调用__getattribute__。这个方法只适用于新式类</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/04/19/python/Python%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5%E8%A7%A3%E9%87%8A/" rel="prev" title="Python基础概念解释">
+      <i class="fa fa-chevron-left"></i> Python基础概念解释
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/04/19/python/%E3%80%90python%E3%80%91%20%E5%8F%AF%E8%BF%AD%E4%BB%A3%E5%AF%B9%E8%B1%A1%E3%80%81%E8%BF%AD%E4%BB%A3%E5%99%A8%E5%92%8C%E7%94%9F%E6%88%90%E5%99%A8/" rel="next" title="【python】 可迭代对象、迭代器和生成器">
+      【python】 可迭代对象、迭代器和生成器 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Python%E9%AD%94%E6%9C%AF%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93"><span class="nav-number">1.</span> <span class="nav-text">Python魔术方法总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#call"><span class="nav-number">1.0.1.</span> <span class="nav-text">_call_</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#iter-%E5%92%8C-next"><span class="nav-number">1.0.2.</span> <span class="nav-text">__iter__和_next_</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#new-%E5%92%8C-init"><span class="nav-number">1.0.3.</span> <span class="nav-text">__new_和_init_</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#getitem-%E3%80%81-setitem-%E5%92%8C-delitem"><span class="nav-number">1.0.4.</span> <span class="nav-text">__getitem__、__setitem__和_delitem_</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#str"><span class="nav-number">1.0.5.</span> <span class="nav-text">_str_</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#enter-%E5%92%8C-exit"><span class="nav-number">1.0.6.</span> <span class="nav-text">__enter__和_exit_</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#add"><span class="nav-number">1.0.7.</span> <span class="nav-text">_add_</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#getattr-%E5%92%8C-getattribute"><span class="nav-number">1.0.8.</span> <span class="nav-text">__getattr_和_getattribute_</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">ZhangChengWen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ZhangChengWen</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
